@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="navbar.css">
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+    <div class="navbar_include"></div>
+    <script>
+        fetch('/navbar', { method: 'GET' })
+        .then(response => response.text())
+        .then(data => {
+            document.querySelector('.navbar_include').innerHTML = data;
+        })
+        .catch(error => {
+            console.error('Error fetching data:', error);
+        });
+    </script>
+    <div class="slider-container">
+        
+        <div class="slider">
+            <div class="slide">
+                <img src="img/imgslide1.png" alt="Image 1">
+            </div>
+            <div class="slide">
+                <img src="img/imgslide2.png" alt="Image 2">
+            </div>
+            <div class="slide">
+                <img src="img/imgslide3.png" alt="Image 3">
+            </div>
+            <div class="slide">
+                <img src="img/imgslide4.png" alt="Image 4">
+            </div>
+            <div class="slide">
+                <img src="img/imgslide5.png" alt="Image 5">
+            </div>
+            <div class="slide">
+                <img src="img/imgslide6.png" alt="Image 6">
+            </div>
+        </div>
+       
+    </div>
+    <div class="item"></div>
+
+    
+
+</body>
+<script>
+    const productsContainer = document.getElementById('products');
+
+    fetch('http://localhost:8080/products')
+      .then(response => response.json())
+      .then(data => {
+        if (data.length > 0) {
+          let productContent = '';
+          data.forEach(product => {
+            productContent += `
+              <div class="item_box">
+                <a href="product_item.html?productNo=${product.ProductNo}">
+                  <img src="img/${product.ProductNo}.jpg" alt="${product.ProductName}" />
+                </a>
+                <div class="info">
+                  <p class="name_product">${product.ProductName}</p>
+                  <div class="category">
+                    <p>${product.Category}</p>
+                  </div>
+                  <div class="price">
+                    <p>${product.PricePerUnit} บาท</p>
+                  </div>
+                </div>
+              </div>
+            `;
+          });
+          productsContainer.innerHTML = productContent;
+        } else {
+          productsContainer.textContent = '0 ผลลัพธ์';
+        }
+      })
+      .catch(error => {
+        console.error('Error fetching data:', error);
+        productsContainer.textContent = 'Error loading products';
+      });
+  </script>
+<!-- <script>
+    fetch('/products', { method: 'GET' })
+    .then(response => response.json())
+    .then(data => {
+        const itemContainer = document.querySelector('.item');
+        if (data.length > 0) {
+            data.forEach(row => {
+                const productNo = row.ProductNo;
+                const productName = row.ProductName;
+                const category = row.Category;
+                const pricePerUnit = row.PricePerUnit;
+                
+                const itemBox = document.createElement('div');
+                itemBox.classList.add('item_box');
+                
+                const link = document.createElement('a');
+                link.href = `product_item.html?productNo=${productNo}`;
+                
+                const img = document.createElement('img');
+                img.src = `img/${productNo}.jpg`;
+                
+                const info = document.createElement('div');
+                info.classList.add('info');
+                
+                const nameProduct = document.createElement('p');
+                nameProduct.classList.add('name_product');
+                nameProduct.textContent = productName;
+                
+                const categoryDiv = document.createElement('div');
+                categoryDiv.classList.add('category');
+                
+                const categoryP = document.createElement('p');
+                categoryP.textContent = category;
+                
+                const priceDiv = document.createElement('div');
+                priceDiv.classList.add('price');
+                
+                const priceP = document.createElement('p');
+                priceP.textContent = `${pricePerUnit} บาท`;
+                
+                itemContainer.appendChild(link);
+                link.appendChild(itemBox);
+                itemBox.appendChild(img);
+                itemBox.appendChild(info);
+                info.appendChild(nameProduct);
+                info.appendChild(categoryDiv);
+                categoryDiv.appendChild(categoryP);
+                info.appendChild(priceDiv);
+                priceDiv.appendChild(priceP);
+            });
+        } else {
+            itemContainer.textContent = '0 ผลลัพธ์';
+        }
+    })
+    .catch(error => {
+        console.error('Error fetching data:', error);
+    });
+
+</script> -->
+<script>
+    let slideIndex = 0;
+    showSlides();
+
+    function showSlides() {
+        let i;
+        const slides = document.getElementsByClassName("slide");
+        for (i = 0; i < slides.length; i++) {
+            slides[i].style.display = "none";
+        }
+        slideIndex++;
+        if (slideIndex > slides.length) {slideIndex = 1}
+        slides[slideIndex-1].style.display = "block";
+        setTimeout(showSlides, 3000); 
+    }
+</script>
+</html>

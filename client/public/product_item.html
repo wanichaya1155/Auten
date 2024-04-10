@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>product item</title>
+    <link rel="stylesheet" href="product_item.css">
+    <link rel="stylesheet" href="navbar.css">
+</head>
+<body>
+    <div class="navbar_include"></div>
+    <script>
+        fetch('/navbar', { method: 'GET' })
+        .then(response => response.text())
+        .then(data => {
+            document.querySelector('.navbar_include').innerHTML = data;
+        })
+        .catch(error => {
+            console.error('Error fetching data:', error);
+        });
+    </script>
+    <div class="container_product">
+        <div class="product_img">
+            <img src="img/" id="productImage">
+        </div>
+        <div class="inform" id="productInfo">
+            <p class="Item_name"></p>
+            <p class="price"></p>
+            <p class="Item_description"></p>
+            <div class="product_qty">
+                <button class="quantity-btn minus-btn">-</button>
+                <input type="text" class="quantity-input" placeholder="จำนวนสินค้า" value="1">
+                <button class="quantity-btn plus-btn">+</button>
+            </div>
+            <button class="buy_now" onclick="buyNow()">ซื้อสินค้า</button>
+            <button class="add_to_cart" onclick="addToCart()">เพิ่มลงตะกร้า</button>
+        </div>
+    </div>
+    
+
+</body>
+<script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const productNo = urlParams.get('productNo');
+    console.log(productNo);
+    fetch('/product_item?productNo=' + productNo, { method: 'GET' })
+    .then(response => response.json())
+    .then(data => {
+        const product = data[0]; // สมมติว่ามีสินค้าเพียงรายการเดียวที่ได้รับกลับมา
+        document.getElementById('productImage').src = `img/${product.ProductNo}.jpg`;
+        document.querySelector('.Item_name').textContent = product.ProductName;
+        document.querySelector('.price').textContent = `${product.PricePerUnit} บาท`;
+        // อาจต้องแสดงข้อมูลอื่น ๆ เช่น รายละเอียดสินค้า ในส่วนนี้ด้วย
+    })
+    .catch(error => {
+        console.error('Error fetching product data:', error);
+    });
+</script>
+
+<script>
+    // ปุ่มเพิ่มจำนวนสินค้า
+    document.querySelector('.plus-btn').addEventListener('click', function() {
+    var input = document.querySelector('.quantity-input');
+    var value = parseInt(input.value, 10);
+    input.value = isNaN(value) ? 1 : value + 1;
+    });
+
+    // ปุ่มลดจำนวนสินค้า
+    document.querySelector('.minus-btn').addEventListener('click', function() {
+    var input = document.querySelector('.quantity-input');
+    var value = parseInt(input.value, 10);
+    //input.value = isNaN(value) ? 1 : value - 1;
+    if (value >= 1) {
+    input.value = value - 1;
+    } else {
+        // ถ้าค่าเป็น 1 แล้วกดลด ให้ค่าเป็น 1 ไม่เปลี่ยนแปลง
+        input.value = 1;
+    }
+    });
+</script>
+<script>
+    const token = sessionStorage.getItem('token');
+
+    function buyNow(productNo) {
+        window.location.assign('shopping_cart2.html');
+        /*const qty = document.querySelector('.quantity-input').value;
+        //best
+        const urlParams = new URLSearchParams(window.location.search);
+        productNo = urlParams.get('productNo');
+        //
+    
+        fetch('/insert_to_cart', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                productNo: productNo,
+                quantity: qty
+            })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to add product to cart2');
+            }
+            // เมื่อเพิ่มสินค้าลงในตะกร้าเรียบร้อย ทำการ redirect ไปยัง test_make.php
+            const custId = "<?php echo $custId; ?>";
+               
+               window.location.href = `shoppingcart.html?productNo=${productNo}&quantity=${qty}`;
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Failed to add product to cart1');
+        });*/
+    }
+    
+    function addToCart() {
+        const qty = document.querySelector('.quantity-input').value;
+        console.log(qty);
+        fetch('/insert_to_cart', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token 
+            },
+            body: JSON.stringify({
+                productNo: productNo,
+                quantity: qty
+            })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to add product to cart11');
+            }
+            alert('Product added to cart');
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Failed to add product to cart22');
+        });
+    }
+    
+</script>
+</html>

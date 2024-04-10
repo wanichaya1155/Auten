@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+    
+        th, td {
+            border: 1px solid #dddddd;
+            padding: 8px;
+            text-align: left;
+        }
+    
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>Shopping Cart</h1>
+    <form action="">
+        <table id="table_info">
+            <thead>
+                <tr>
+                    <th>Select</th> 
+                    <th>Qty</th> 
+                    <th>ProductName</th>
+                    <th>PricePerUnit</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- ใส่ข้อมูลที่ได้รับมาจากการดึงข้อมูลด้วย JavaScript -->
+            </tbody>
+        </table>
+        <center>
+            <input type='submit' value='ซื้อสินค้า'>
+        </center>
+    </form>
+
+    <script>
+        // เมื่อหน้าเว็บโหลดเสร็จสมบูรณ์
+        document.addEventListener('DOMContentLoaded', function() {
+            fetch('/shoppingcart', {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + sessionStorage.getItem('token')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                displayShoppingCart(data);
+            })
+            .catch(error => console.error('Error fetching shopping cart data:', error));
+        });
+
+        // ฟังก์ชันสำหรับแสดงข้อมูลสินค้าในตะกร้า
+        function displayShoppingCart(shoppingCartData) {
+            const tableBody = document.querySelector('table tbody');
+            tableBody.innerHTML = '';
+
+            shoppingCartData.forEach(product => {
+                const row = tableBody.insertRow();
+
+                const checkboxCell = row.insertCell();
+                const quantityCell = row.insertCell();
+                const productNameCell = row.insertCell();
+                const pricePerUnitCell = row.insertCell();
+             
+
+                checkboxCell.innerHTML = `<input type="checkbox" name="selectedProducts[]" value="${product.CartId}">`;
+                quantityCell.innerHTML = `
+                    <div class="product-qty">
+                        <button class="quantity-btn minus-btn">-</button>
+                        <input type="text" class="quantity-input" name="qty[]" value="${product.ProductQty}">
+                        <button class="quantity-btn plus-btn">+</button>
+                    </div>
+                `;
+                productNameCell.textContent = product.ProductName;
+                pricePerUnitCell.textContent = product.PricePerUnit;
+                //cartIdCell.textContent = product.CartId;
+            });
+        }
+    </script>
+    
+</body>
+</html>

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>shoppingcart</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+    
+        th, td {
+            border: 1px solid #dddddd;
+            padding: 8px;
+            text-align: left;
+        }
+    
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>Shoppingcart</h1>
+    <form action="">
+        <table>
+            <tr>
+                <th>Select</th>
+                <th>Quantity</th>
+                <th>ProductName</th>
+                <th>PricePerUnit</th>
+            </tr>
+            <tr>
+                <td>
+                    <input type="checkbox" name="selectedProducts[]" value="<?php echo $id; ?>">
+                </td>
+                <td>
+                    <div class="product-qty">
+                        <button class="quantity-btn minus-btn">-</button>
+                        <input type="text" class="quantity-input" name="qty[]" id='qty' value="<?php echo $row['ProductQty']; ?>">
+                        <button class="quantity-btn plus-btn">+</button>
+                    </div>
+                </td>
+                <td class="productName"></td>
+                <td class="pricePerUnit"></td>
+            </tr>
+        </table>
+        
+        <button type="submit">สั่งซื้อสินค้า</button>
+    </form>
+    
+    
+</body>
+<!-- <script>
+    //เช็ค token
+    const token = sessionStorage.getItem('token');
+
+    // ทำการส่ง token ไปยังเซิร์ฟเวอร์เพื่อตรวจสอบความถูกต้อง
+    fetch('/protected', {
+    method: 'GET',
+    headers: {
+        'Authorization': `Bearer ${token}`
+    }
+    })
+    .then(response => {
+    if (!response.ok) {
+        throw new Error('Unauthorized');
+    }
+    return response.json();
+    })
+    .then(data => {
+    // เมื่อตรวจสอบความถูกต้องของ token สำเร็จ
+    console.log(data);
+    })
+    .catch(error => {
+    console.error('Unauthorized:', error);
+    // หรือสามารถ redirect ไปยังหน้า login หรือหน้าอื่นที่เหมาะสมได้
+    window.location.assign('login.html');
+    });
+
+</script> -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const custtNo = urlParams.get('custtNo');
+ 
+        fetch(`/product_info?custNo=${custNo}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to fetch product information');
+            }
+            return response.json();
+        })
+        .then(data => {
+            // แสดงชื่อสินค้าและราคาในตาราง
+            document.querySelector('.productName').textContent = data.ProductName;
+            document.querySelector('.pricePerUnit').textContent = data.PricePerUnit;
+        })
+        .catch(error => {
+            console.error('Error fetching product data:', error);
+        });
+    });
+</script>
+
+   
+  
+
+</script>
+<script>
+    document.querySelectorAll('.plus-btn').forEach(function(button) {
+        button.addEventListener('click', function(event) {
+            event.preventDefault();
+            var input = button.parentElement.querySelector('.quantity-input');
+            var value = parseInt(input.value, 10);
+            input.value = isNaN(value) ? 1 : value + 1;
+            var qtyHiddenInput = button.parentElement.parentElement.querySelector('.quantity-hidden');
+            qtyHiddenInput.value = input.value;
+            button.parentElement.parentElement.parentElement.submit();
+        });
+    });
+    document.querySelectorAll('.minus-btn').forEach(function(button) {
+        button.addEventListener('click', function(event) {
+            event.preventDefault();
+            var input = button.parentElement.querySelector('.quantity-input');
+            var value = parseInt(input.value, 10);
+            if (value > 1) {
+                input.value = value - 1;
+            } else if (value === 1) {
+                var cartId = button.parentElement.parentElement.querySelector('.CartId').textContent;
+                var formData = new FormData();
+                formData.append('cartId', cartId);
+                var xhr = new XMLHttpRequest();
+                xhr.open('POST', 'delete_cart.php', true);
+                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                xhr.onload = function() {
+                    if (xhr.status === 200) {
+                        window.location.reload();
+                    } else {
+                        alert('เกิดข้อผิดพลาดในการลบรายการสินค้า');
+                    }
+                };
+                xhr.send('cartId=' + encodeURIComponent(cartId));
+            }
+        });
+    });
+</script>
+</html>

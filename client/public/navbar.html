@@ -1,0 +1,27 @@
+
+<nav class="navbar">
+    <div class="logo">
+       <a href="index.html">
+            <img src="img/logo.png" alt="Logo">
+       </a>
+    </div>
+    <div class="element-right">
+        <form method="post" action="testindex.php" class="search-bar">
+            <input type="text" name="search" placeholder="Search...">
+            <button type="submit">Search</button>
+        </form>
+        <div class="cart">
+            <a href="shopping_cart2.html">
+                <img src="img/cart.png" alt="Cart">
+            </a>
+        </div>
+        <div class="user-profile">
+            <img src="img/profilephoto.png" alt="Profile">
+            <p><?php echo $username; ?></p>
+            <div class="dropdown-content">
+                <a href="#">การซื้อของฉัน</a>
+                <a href="logout.html?logout">ออกจากระบบ</a>
+            </div>
+        </div>
+    </div>
+</nav>
